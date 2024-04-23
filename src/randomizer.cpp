@@ -59,24 +59,24 @@ void Randomizer::loadSounds() {
 void Randomizer::playRandomDeathSound() {
     randomizeSound();
 
-	float volume;
 	auto controlVanillaSFX = Loader::get()->getLoadedMod("raydeeux.controlvanillasfx");
+	// Added by ery
 	if (controlVanillaSFX && controlVanillaSFX->getSettingValue<bool>("enabled")) {
-		volume = controlVanillaSFX->getSettingValue<int64_t>("volume") / 100.0f;
-		volume *= controlVanillaSFX->getSettingValue<double>("volumeBoost");
-		
-		auto system = FMODAudioEngine::sharedEngine()->m_system;
+		float volume = controlVanillaSFX->getSettingValue<int64_t>("volume") / 100.0f;
+        volume *= controlVanillaSFX->getSettingValue<double>("volumeBoost");
+        
+        auto system = FMODAudioEngine::sharedEngine()->m_system;
 
-		FMOD::Channel* channel;
-		FMOD::Sound* sound;
-		
-		system->createSound(customDeathSound.c_str(), FMOD_DEFAULT, nullptr, &sound);
-		system->playSound(sound, nullptr, false, &channel);
-		channel->setVolume(volume);
-	} else {
-		volume = GameManager::get()->m_sfxVolume;
-        FMODAudioEngine::sharedEngine()->playEffect(customDeathSound, 1, 1, volume);
-	}}
+        FMOD::Channel* channel;
+        FMOD::Sound* sound;
+        
+        system->createSound(customDeathSound.c_str(), FMOD_DEFAULT, nullptr, &sound);
+        system->playSound(sound, nullptr, false, &channel);
+        channel->setVolume(volume);
+    } else {
+        FMODAudioEngine::sharedEngine()->playEffect(customDeathSound);
+    }
+}
 
 bool Randomizer::isValidExtension(const std::string &filePath) {
     switch (geode::utils::hash(filePath.c_str())) {
